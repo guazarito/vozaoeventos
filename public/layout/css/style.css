@@ -1,0 +1,289 @@
+#loader {
+  position: absolute;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 } 
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+  from{ bottom:-100px; opacity:0 } 
+  to{ bottom:0; opacity:1 }
+}
+
+
+@font-face {
+    font-family: BebasNeue;
+    src: url("/layout/fonts/BebasNeue.otf") format("opentype");
+}
+
+
+.navbar{
+	border-bottom: 1px solid #8D0101; 
+	box-shadow: 0 4px 2px -2px gray;
+}
+
+#evento_header{
+	text-align: left;
+
+}
+
+#data_evento_header{
+	text-align: right;
+}
+
+#evento_header h1, #data_evento_header h1{
+	font-size: 4em;
+	font-weight: bold;
+	font-family: BebasNeue;
+	line-height: 60%;
+	color: #8D0101;
+}
+
+#evento_header h3, #data_evento_header h3{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 1.5em;
+	font-weight: bold;
+	line-height: 80%;
+}
+
+#evento_lineup{
+	margin-top: 25px;
+}
+
+#ingresso{
+	border-bottom: 2px solid #8D0101;
+	font-size: 2em;
+	color: #8D0101;
+	font-family: BebasNeue;
+	margin-bottom: 15px;
+	font-weight: bold;
+}
+
+#lote_info{
+	color: #8D0101;
+	font-weight: bold;
+}
+
+#comprar-botao{
+	float: right;
+}
+
+
+#evento_fb{
+	text-align: right;
+	font-family: 'Roboto Condensed', sans-serif;
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+
+#preco-total{
+	width: 60px;
+	color: #8D0101;
+	border:none;
+}
+
+#atracoes, #obs, #ponto_venda{
+	margin-bottom: 7px;
+}
+
+#atracoes h2, #obs h2, #ponto_venda h2{
+	font-size: 3em;
+	font-weight: bold;
+	font-family: BebasNeue;
+	color: #8D0101;
+	border-bottom: 2px solid #8D0101;
+}
+
+.termos h2{
+	font-size: 2em;
+	font-weight: bold;
+	font-family: BebasNeue;
+	color: #8D0101;
+	border-bottom: 2px solid #8D0101;
+}
+
+#atracoes ul, #obs ul{
+	list-style-type: square;
+}
+
+#ponto_venda ul{
+	list-style-type: none;
+}
+
+#atracoes ul li h3, #ponto_venda ul li h3{
+	font-size: 2em;
+	font-weight: bold;
+	font-family: BebasNeue;
+}
+
+#obs ul li p, #ponto_venda ul li p{
+	font-size: 1em;
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+#ponto_venda ul li h3 a{
+	text-decoration: underline;
+}
+
+/* cart */
+
+
+
+#cart_tbl{
+	border-bottom:2px solid #dddddd;
+	margin-top: 10px;
+}
+
+#cart_title, #checkout_title, #help_title, #cadastro_title, #meuspedidos_title, #termosuso_title{
+	font-size: 3em;
+	font-weight: bold;
+	font-family: BebasNeue;
+	color: #8D0101;
+	border-bottom: 2px solid #8D0101;
+}
+
+/*checkout*/
+.validationClass{
+	color: red;
+	font-style: italic;
+}
+
+.nav-tabs{
+	color: #8D0101;
+}
+
+#btnCheckoutCard{
+	
+	color: #fff;
+	font-weight: bold;
+}
+
+#btnCheckoutCard:hover{
+	cursor: pointer;
+}
+
+.congrats{
+	margin: 0 auto;
+}
+
+.congrats h1{
+	font-size: 3em;
+	font-weight: bold;
+	font-family: BebasNeue;
+	color: #8D0101;
+}
+
+.congrats h3{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.congrats p{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 1em;
+}
+
+#contato_txt{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 1.5em;
+	font-weight: 500;
+}
+
+/* meus pedidos */
+
+.meus_pedidos{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 1.2em;
+}
+
+#status_nome{
+	color: #8D0101;
+	font-weight: bold;
+}
+
+
+#footer{
+	background-color: #F8F8F8; 
+	width: 100%; 
+	border-top: 1px solid #8D0101; 
+	height: 160px;
+	margin-top: 80px;
+}
+
+#footer_copy{
+	
+}
+
+#footer_logo{
+	text-align: left;
+	margin-top: 30px;
+}
+
+#footer_copyright{
+	text-align: right;
+	margin-top: 45px;
+}
+
+#developedby{
+	text-align: right;
+	color: grey;
+}
+
+
+@media only screen and (max-width: 768px) {
+    #evento_header{
+		text-align: center;
+	}
+
+	#data_evento_header{
+		text-align: center;
+		padding-top: 10px;
+	}
+
+	#evento_fb{
+		text-align: center;
+	}
+
+	#footer_logo{
+		text-align: center;
+	}
+
+	#footer_copyright, #developedby{
+		text-align: center;
+	}
+
+
+}

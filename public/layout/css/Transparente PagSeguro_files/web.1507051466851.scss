@@ -1,0 +1,118 @@
+@-webkit-keyframes progress{to{width:100%}}@keyframes progress{to{width:100%}}.pagseguro-progressbar{position:relative;width:100%;height:10px;background-color:#eee;padding:2px;margin:.6em 0;border:1px #777 double;clear:both;overflow:hidden}.pagseguro-progressbar::after,.pagseguro-progressbar::before{position:absolute;left:0;top:0;content:'';height:15px;background-color:#45C026!important}.pagseguro-progressbar::before{width:0;max-width:100%;background:url(http://www.cssdeck.com/uploads/media/items/7/7uo1osj.gif) repeat-x;-webkit-animation:progress 2s 1 forwards;animation:progress 2s 1 forwards;z-index:1}.pagseguro-progressbar::after{width:100%;z-index:3;opacity:.3}
+
+body {
+	background : #FFF url("https://stc.sandbox.pagseguro.uol.com.br/pagseguro/i/sandbox/common/background/1500x286.png") no-repeat center 85px !important;
+	background-size:contain!important;
+}
+#main-header {
+	border-bottom : solid 5px #90e265;
+}
+
+h1, caption {
+	color : #77bf52 !important;
+}
+
+div.centerDiv {
+	border : none;
+	overflow: visible;
+}
+
+
+#main-header aside {
+	background-color : #D6E7CD;
+	border-top : solid 5px #90e265;
+	display : none;
+}
+
+#sellerDiv {
+	font-size : 1.1em;
+	background-color : transparent;
+}
+
+#sellerDiv h2 {
+	color : #666;
+	font-size : auto;
+}
+
+#sellerDiv address {
+	font-size : auto;
+}
+
+#main-header .sandbox-info{
+	height:0;
+	position:absolute;
+	line-height:25px;
+	top: 85px;
+	text-align:center;
+	font-size:12px;
+	color:#444;
+	right:2px;
+	width:200px;
+	border-top:solid 25px #90E265;
+	border-left:solid 25px rgba(255, 255, 255, 0);
+	border-right:solid 25px  rgba(255, 255, 255, 0);
+	z-index: 1000;
+}
+
+#main-header .sandbox-info span{
+	display:block;
+	position:absolute;
+	top:-27px;
+	width:200px;
+	color:#374430;
+}
+
+img.loader-gif {
+	display : none;
+}
+
+div.pagseguro-progressbar {
+	height : 0;
+	top : 60px;
+}
+
+
+#all, #all #cart {
+	background-color : #E3F0DC;
+}
+#all #cart table {
+	width : auto;
+}
+#all #cart table thead th {
+	background-color : #90e265;
+	color : #FFFFFF;
+}
+#all #cart table tfoot tr#totalBuyRow td {
+	background-color : #A5EE7F;
+}
+#all #cart table tfoot tr#totalRow td {
+	background-color : #7FE213;
+}
+#all #cart table tfoot tr#totalBuyRow td,
+#all #cart table tfoot tr#totalBuyRow td h3,
+#all #cart table tfoot tr#totalRow td,
+#all #cart table tfoot tr#totalRow td h3 {
+	color : #236D1C !important;
+}
+#all aside {
+	background-color : transparent;
+}
+
+
+#UolPS-application-loader span {
+	width : 300px;
+	left : 46%;
+	top : 48%;
+}
+#UolPS-application-loader span img.loader-pagseguro-png {
+	margin-top : -20px !important;
+}
+
+
+#shopDetails > div:first-child > a {
+	display : none;
+}
+
+section#all {
+	margin: 30px auto;
+}

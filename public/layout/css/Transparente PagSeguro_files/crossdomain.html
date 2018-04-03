@@ -1,0 +1,36 @@
+
+<!-- saved from url=(0121)https://clicklogger.rm.uol.com.br/crossdomain.html?appender=&prd=32&grouping=&referrer=http%3A//127.0.0.1%3A8000/checkout -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="./UolRMWorker.js.download"></script>
+        <script type="text/javascript">
+            function Executor(){
+                this.init = function(){
+                    var referrer = '';
+                    if (document.location.href.toLowerCase().match(/(?:\&|\?)referrer=([\w\:\%\-\/\.\+]+)/)) {
+                       referrer = RegExp.$1; 
+                    } 
+                    
+                    var prd = '';  
+                    if (document.location.href.toLowerCase().match(/(?:\&|\?)prd=([\w\:\%\-\/\.]+)/)) {
+                      prd = RegExp.$1;
+                    }
+
+                    var appender = '';
+                    if (document.location.href.toLowerCase().match(/(?:\&|\?)appender=([\w\:\%\-\/\.]+)/)) {
+                      appender = RegExp.$1;
+                    }
+
+                    var grouping = '';
+                    if (document.location.href.match(/(?:\&|\?)grouping=([\w\:\;\%\-\/\.]+)/)) {
+                      grouping = RegExp.$1;
+                    }
+
+                    new UolRMWorker().execute(appender, prd, grouping, referrer);
+                }                
+            }; 
+        </script>
+    </head>
+    
+    <body onload="new Executor().init();">
+
+</body></html>

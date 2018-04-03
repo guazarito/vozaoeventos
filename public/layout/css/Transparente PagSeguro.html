@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://127.0.0.1:8000/checkout -->
+<html lang="en" style="cursor: default;"><head style="cursor: default;"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title style="cursor: default;">Transparente PagSeguro</title>
+		
+		<script src="./Transparente PagSeguro_files/jquery.min.js.download" style="cursor: default;"></script>
+		<link href="./Transparente PagSeguro_files/bootstrap.css" rel="stylesheet" style="cursor: default;">
+     	<script src="./Transparente PagSeguro_files/bootstrap.js.download" style="cursor: default;"></script>
+
+		<script src="./Transparente PagSeguro_files/jquery.validate.min.js.download" style="cursor: default;"></script>
+		<script src="./Transparente PagSeguro_files/additional-methods.min.js.download" style="cursor: default;"></script>
+		<script src="./Transparente PagSeguro_files/jquery.mask.min.js.download" style="cursor: default;"></script>
+
+		<script src="./Transparente PagSeguro_files/pagseguro.directpayment.js.download" style="cursor: default;"></script>
+
+
+
+
+		<script style="cursor: default;">
+
+			$(document).ready(function() {
+
+				setSessionId();
+
+				$('#dt_nasc').mask('00/00/0000');
+				$("#cpf").mask('000.000.000-00');
+
+				jQuery.validator.addMethod("cpf", function(value, element) {
+				   value = jQuery.trim(value);
+
+				    value = value.replace('.','');
+				    value = value.replace('.','');
+				    cpf = value.replace('-','');
+				    while(cpf.length < 11) cpf = "0"+ cpf;
+				    var expReg = /^0+$|^1+$|^2+$|^3+$|^4+$|^5+$|^6+$|^7+$|^8+$|^9+$/;
+				    var a = [];
+				    var b = new Number;
+				    var c = 11;
+				    for (i=0; i<11; i++){
+				        a[i] = cpf.charAt(i);
+				        if (i < 9) b += (a[i] * --c);
+				    }
+				    if ((x = b % 11) < 2) { a[9] = 0 } else { a[9] = 11-x }
+				    b = 0;
+				    c = 11;
+				    for (y=0; y<10; y++) b += (a[y] * c--);
+				    if ((x = b % 11) < 2) { a[10] = 0; } else { a[10] = 11-x; }
+
+				    var retorno = true;
+				    if ((cpf.charAt(9) != a[9]) || (cpf.charAt(10) != a[10]) || cpf.match(expReg)) retorno = false;
+
+				    return this.optional(element) || retorno;
+
+				}, "Informe um CPF válido");
+
+				$("#paymentForm").validate({
+					rules: {
+					    cardNumber: {
+					      required: true,
+					      creditcard: true
+					    },
+					    holder_dtnasc:{
+					      required: true,
+					      date: true
+					    },
+					    cvv:{
+					      required: true,
+					      digits: true
+					    },
+					    holder_name:{
+					    	required: true
+					    },
+					    holder_cpf:{
+					    	cpf: true,
+					    	required: true
+					    }
+					 },
+					 messages:{					 	
+					 		cardNumber: "Por favor, informe um cartão de crédito válido.",
+					 		holder_dtnasc: "Por favor, informe uma data válida.",
+					 		cvv: "Somente números permitido",
+					 		holder_name:{required: "Campo obrigatório"},
+					 		holder_cpf:{required: "Campo obrigatório"}
+					  },
+					  submitHandler: function(form) {
+    						getBrandCard();
+							createCardToken();
+  					  }
+					});
+
+
+				$("#btn-finaliza").click(function(){
+					setSessionId(); //olhar metodo done, alterar a funcao chamada lá
+				});
+				$("#btn-boleto").click(function(){
+					setSessionId(); //olhar metodo done, alterar a funcao chamada lá
+				});
+				/*$('#btnCheckoutCard').click(function(){
+					//setSessionId(); //coloquei no load da pagina - linha 18
+					//alert($('input[name=cardNumber]').val().replace(/ /g,''));
+					getBrandCard();
+					createCardToken();
+				});		*/
+			});
+
+			function valida_form(){
+
+			}
+
+			function paymentBoleto(){
+
+				var sendHash = PagSeguroDirectPayment.getSenderHash();
+				var token = $('input[name=_token]').val();
+				$.ajax({
+					method: "POST",
+					url: "http://127.0.0.1:8000/teste_pagseguro/transparente/boleto",
+					data: {
+						_token: token,
+						sendHash: sendHash
+					},
+					beforeSend: function(){
+						$('*').css( 'cursor', 'wait' );
+					}
+				}).done(function(paymentLink) {                  
+					location.href=paymentLink;
+				}).fail(function(){
+					alert("Erro inesperado, tente novamente!")
+				}).always(function(){
+					$('*').css( 'cursor', 'default' );
+				});				
+			}
+
+			//cartao:
+			function CardTransaction(){
+				var senderHash = PagSeguroDirectPayment.getSenderHash();
+				var dadosForm = $("#paymentForm").serialize()+"&senderHash="+senderHash;
+				//console.log(dadosForm);				
+				$.ajax({
+					method: "POST",
+					url: "http://127.0.0.1:8000/teste_pagseguro/transparente/cartao-credito",
+					data: dadosForm,
+					beforeSend: function(){
+						$('*').css( 'cursor', 'wait' );
+					}
+				}).done(function(code) {                  
+					//console.log(code);
+					//alert('code transaction: ' + code);
+					//salvar dados no bd
+									$.ajax({
+										method: "POST",
+										url: "http://127.0.0.1:8000/checkout/finalizar_checkout/aAl7yeussXpDGYOYemONtXGDPdcMEc5A1LRwYJ9pFCWMPcH80u",
+										data: dadosForm+"&transactionCode="+code,
+										beforeSend: function(){
+											$('*').css( 'cursor', 'wait' );
+										}
+									}).done(function(code) {                  
+										//manda ele pra uma pagina de parabens com link para meus pedidos..										
+									}).fail(function(){
+										alert("Erro inesperado na finalizar_checkout, por favor, tente novamente!");
+									}).always(function(){
+										$('*').css( 'cursor', 'default' );
+									});	
+
+				}).fail(function(){
+					alert("Erro inesperado na transação, por favor, tente novamente!");
+				}).always(function(){
+					$('*').css( 'cursor', 'default' );
+				});				
+			}
+
+			function getInstallments(){
+				PagSeguroDirectPayment.getInstallments({
+				    amount: '240.00',
+				    maxInstallmentNoInterest: '1',
+				    brand: $('input[name=bandeira]').val(),
+				    success: function(response){
+				    	//console.log(response);
+				    },
+				    error: function(response){
+				    },
+				    complete: function(response){
+
+				    }
+				});
+			}
+
+			function createCardToken(){
+				PagSeguroDirectPayment.createCardToken({
+				    cardNumber: $('input[name=cardNumber]').val().replace(/ /g,''),
+				    brand: $('input[name=bandeira]').val(),
+				    cvv: $('input[name=cvv]').val().replace(/ /g,''),
+				    expirationMonth: $('select[name=month').find(":selected").val(),
+				    expirationYear: $('select[name=year').find(":selected").val(),
+				    success: function(response){
+				    	//alert(response.card.token);
+				    	//alert($('input[name=bandeira]').val());
+				    	$('input[name=cardToken]').val(response.card.token);
+				    	//alert($('input[name=cardToken]').val());
+				    	//getInstallments();
+				    	CardTransaction();
+				    } ,
+				    error: function(response){
+						console.log('erro inesperado no processamento do token do cartão de crédito.\n Tente novamente, por favor.');
+				    } ,
+				    complete: function(){
+				    	
+				    }
+				});
+			}
+
+			function getBrandCard(){
+				PagSeguroDirectPayment.getBrand({
+					cardBin: $('input[name=cardNumber]').val().replace(/ /g,''),
+					success: function(response){
+						//console.log(response);
+						//alert(response.brand.name);
+						$('input[name=bandeira]').val(response.brand.name);
+					},
+					error: function(response){
+						console.log('erro cartão');
+					},
+					complete: function(response){
+						//alert(response);
+					}
+				});
+			}
+			//fim cartao
+
+			function setSessionId(){
+				var token = $('input[name=_token]').val();
+				//alert(token);
+				$.ajax({
+					method: "POST",
+					url: "http://127.0.0.1:8000/teste_pagseguro/transparente",
+					data: {
+						_token: token
+					},
+					beforeSend: function(){
+						$('*').css( 'cursor', 'wait' );
+					}
+				}).done(function(data) {                  
+					PagSeguroDirectPayment.setSessionId(data);
+					//getPaymentMethods();
+					//paymentBoleto();
+					$("#loading").css("display", "none");
+					$("#loader").css("display", "none");
+					$("#btnCheckoutCard").css('disabled', false);
+				}).fail(function(){
+					alert("Erro inesperado, tente novamente!")
+				}).always(function(){
+					$('*').css( 'cursor', 'default' );
+				});
+			}
+
+			function getPaymentMethods(){
+				PagSeguroDirectPayment.getPaymentMethods({
+					success: function(response){
+						console.log(response);
+						if (response.error == false){
+							$.each(response.paymentMethods, function(key, value){
+								$("#PaymentMethods").append(key+"<br>");
+							});
+						}
+					},
+					erro: function(response){
+						console.log(response);
+					},
+					complete: function(response){
+						//console.log(response);
+					}
+				});
+			}
+		</script>
+		
+	<style style="cursor: default;">.directpaymentgateway {position:absolute; width:0px; height:0px; display:none;}</style></head>
+	
+	<body style="cursor: default;">
+			
+
+		<div class="container" style="width: 900px; cursor: default;">
+
+		<div id="cartao_credito" style="cursor: default;">
+				<ul class="nav nav-tabs" id="nav-payment-methods" style="cursor: default;">
+					<li class="active" style="cursor: default;"><a data-toggle="tab" href="http://127.0.0.1:8000/checkout#credit" style="cursor: default;"><i class="fa fa-credit-card" aria-hidden="true" style="cursor: default;"></i> Cartão de Crédito</a></li>
+				</ul>
+				<div class="tab-content" style="margin-top: 20px; cursor: default;">
+				<div id="credit" class="tab-pane fade in active" style="cursor: default;">
+				<form class="form" method="post" id="paymentForm" novalidate="novalidate" style="cursor: default;">
+					<input type="hidden" name="_token" value="dcPo7VGTA8GYUQ6qKjz1egN23xDVar2U7hDBrJmM" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="card" style="cursor: default;">Número do cartão: </label>
+				<div class="credit-card" style="cursor: default;">
+				<input type="tel" name="cardNumber" id="card" class="form-control valid" placeholder="Ex: 0000 0000 0000 0000" aria-required="true" aria-invalid="false" style="cursor: default;"><label id="card-error" class="error" for="card" style="display: none; cursor: default;"></label>
+				<input type="hidden" name="bandeira" value="visa" style="cursor: default;">
+				<input type="hidden" name="cardToken" value="2903fe954fe94401b188bdd1a2225098" style="cursor: default;">
+				</div>
+				</div>
+				<div class="row" style="cursor: default;">
+				<div class="col-md-2 col-xs-6" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="month" style="cursor: default;">Mês: </label>
+				<select id="month" name="month" class="form-control valid" aria-invalid="false" style="cursor: default;">
+				<option value="1" style="cursor: default;">
+				1
+				</option>
+				<option value="2" style="cursor: default;">
+				2
+				</option>
+				<option value="3" style="cursor: default;">
+				3
+				</option>
+				<option value="4" style="cursor: default;">
+				4
+				</option>
+				<option value="5" style="cursor: default;">
+				5
+				</option>
+				<option value="6" style="cursor: default;">
+				6
+				</option>
+				<option value="7" style="cursor: default;">
+				7
+				</option>
+				<option value="8" style="cursor: default;">
+				8
+				</option>
+				<option value="9" style="cursor: default;">
+				9
+				</option>
+				<option value="10" style="cursor: default;">
+				10
+				</option>
+				<option value="11" style="cursor: default;">
+				11
+				</option>
+				<option value="12" style="cursor: default;">
+				12
+				</option>
+				</select>
+				</div>
+				</div>
+				<div class="col-md-3 col-xs-6" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="year" style="cursor: default;">Ano: </label>
+				<select id="year" name="year" class="form-control valid" aria-invalid="false" style="cursor: default;">
+				<option value="2017" style="cursor: default;">
+				2017
+				</option>
+				<option value="2018" style="cursor: default;">
+				2018
+				</option>
+				<option value="2019" style="cursor: default;">
+				2019
+				</option>
+				<option value="2020" style="cursor: default;">
+				2020
+				</option>
+				<option value="2021" style="cursor: default;">
+				2021
+				</option>
+				<option value="2022" style="cursor: default;">
+				2022
+				</option>
+				<option value="2023" style="cursor: default;">
+				2023
+				</option>
+				<option value="2024" style="cursor: default;">
+				2024
+				</option>
+				<option value="2025" style="cursor: default;">
+				2025
+				</option>
+				<option value="2026" style="cursor: default;">
+				2026
+				</option>
+				<option value="2027" style="cursor: default;">
+				2027
+				</option>
+				<option value="2028" style="cursor: default;">
+				2028
+				</option>
+				<option value="2029" style="cursor: default;">
+				 2029
+				</option>
+				<option value="2030" style="cursor: default;">
+				2030
+				</option>
+				<option value="2031" style="cursor: default;">
+				2031
+				</option>
+				<option value="2032" style="cursor: default;">
+				2032
+				</option>
+				<option value="2033" style="cursor: default;">
+				2033
+				</option>
+				<option value="2034" style="cursor: default;">
+				2034
+				</option>
+				<option value="2035" style="cursor: default;">
+				2035
+				</option>
+				<option value="2036" style="cursor: default;">
+				2036
+				</option>
+				<option value="2037" style="cursor: default;">
+				2037
+				</option>
+				<option value="2038" style="cursor: default;">
+				2038
+				</option>
+				<option value="2039" style="cursor: default;">
+				2039
+				</option>
+				<option value="2040" style="cursor: default;">
+				2040
+				</option>
+				</select>
+				</div>
+				</div>
+				<div class="col-md-7 col-xs-12" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="ccv" style="cursor: default;">Cód. Segurança: </label>
+				<input type="tel" name="cvv" id="cvv" class="form-control valid" placeholder="Ex: 998" aria-required="true" aria-invalid="false" style="cursor: default;">
+				</div>
+				</div>
+				</div>
+				<div class="form-group" style="cursor: default;">
+				<label for="name" style="cursor: default;">Nome do titular: </label>
+				<input type="text" name="holder_name" id="name" class="form-control valid" placeholder="Igual impresso no cartão" aria-required="true" aria-invalid="false" style="cursor: default;">
+				</div>
+				<div class="row" style="cursor: default;">
+				<div class="col-md-6 col-xs-12" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="cpf" style="cursor: default;">CPF do titular: </label>
+				<input type="tel" name="holder_cpf" id="cpf" class="form-control valid" placeholder="Ex: 000.000.000-99" maxlength="14" aria-required="true" aria-invalid="false" style="cursor: default;">
+				</div>
+				</div>
+				<div class="col-md-6 col-xs-12" style="cursor: default;">
+				<div class="form-group" style="cursor: default;">
+				<label for="cpf" style="cursor: default;">Data nascimento titular: </label>
+				<input type="tel" name="holder_dtnasc" id="dt_nasc" class="form-control valid" placeholder="Ex: 01/01/1994" maxlength="10" aria-required="true" aria-invalid="false" style="cursor: default;">
+				</div>
+				</div>
+				</div>
+				
+				<div class="col-md-12 text-right" style="cursor: default;">
+				<p style="color: rgb(143, 143, 143); font-size: 14px; cursor: default;">Pagamento processado por <img src="./Transparente PagSeguro_files/pagseguro.png" class="img-responsive" style="width: 120px; height: 25px; display: inline-block; cursor: default;"></p>
+				</div>
+
+				<button type="submit" id="btnCheckoutCard" class="btn btn-checkout" style="width: 100%; text-align: center; cursor: default;">Realizar pagamento</button>
+			
+
+								<input type="hidden" name="qtde" value="2" style="cursor: default;">
+				<input type="hidden" name="lote" value="1" style="cursor: default;">
+				<input type="hidden" name="preco_total_com_taxa" value="132.00" style="cursor: default;">
+				<input type="hidden" name="ref_number" value="42915073805201710261113" style="cursor: default;">
+				
+				</form>
+		</div><!-- cartao credito -->
+	</div><!--container-->
+
+	
+	
+	
+</div></div><iframe src="./Transparente PagSeguro_files/i-ck.html" width="1px" height="1px" id="directpaymentgateway" class="directpaymentgateway" allowtransparency="true" frameborder="0" style="cursor: default;"></iframe></body></html>
